@@ -167,7 +167,7 @@ Transform:
   m_GameObject: {fileID: 500520283}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 0.6}
+  m_LocalScale: {x: 2, y: 1, z: 2}
   m_Children: []
   m_Father: {fileID: 629925725}
   m_RootOrder: 0
@@ -552,7 +552,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 609805568}
   m_LocalRotation: {x: 0, y: 0.19080894, z: 0, w: 0.9816273}
-  m_LocalPosition: {x: 14, y: 0.5, z: 5}
+  m_LocalPosition: {x: 14, y: 1, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1205231548}
@@ -1038,7 +1038,7 @@ Transform:
   m_GameObject: {fileID: 1195772250}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 0.6}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 1417531363}
   m_RootOrder: 0
@@ -1133,7 +1133,7 @@ Transform:
   m_GameObject: {fileID: 1205231547}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 0.6}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 609805570}
   m_RootOrder: 0
@@ -1670,6 +1670,7 @@ GameObject:
   - component: {fileID: 1466215491}
   - component: {fileID: 1466215490}
   - component: {fileID: 1466215493}
+  - component: {fileID: 1466215495}
   - component: {fileID: 1466215494}
   m_Layer: 0
   m_Name: Player
@@ -1750,7 +1751,7 @@ MonoBehaviour:
   player: {fileID: 1466215489}
   attack: {fileID: 1466215494}
   ability1: {fileID: 1466215493}
-  ability2: {fileID: 0}
+  ability2: {fileID: 1466215495}
   ability3: {fileID: 0}
   ability4: {fileID: 0}
 --- !u!114 &1466215492
@@ -1795,6 +1796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf5ee7ffa7cd0d749ad0ec1a199e3ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1466215489}
   isCasting: 0
   cooldownRemaining: 0
   timeSinceStart: 0
@@ -1805,7 +1807,6 @@ MonoBehaviour:
   damage: 10
   range: 15
   projectile: {fileID: 6282103307252837452, guid: 75d2eef948c9f564193a467577ab0654, type: 3}
-  player: {fileID: 1466215489}
 --- !u!114 &1466215494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1818,6 +1819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c5d86bc7c4247844b449e784950b0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1466215489}
   isCasting: 0
   cooldownRemaining: 0
   timeSinceStart: 0
@@ -1828,7 +1830,29 @@ MonoBehaviour:
   damage: 10
   range: 15
   projectile: {fileID: 5604207507069483888, guid: dc130eed85750dd4a91faa58a21787fd, type: 3}
+--- !u!114 &1466215495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466215487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a42d6548f66a5c144a7397c03f5e7fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   player: {fileID: 1466215489}
+  isCasting: 0
+  cooldownRemaining: 0
+  timeSinceStart: 0
+  cooldownTime: 5
+  lockInTime: 0.1
+  windUpTime: 0.2
+  manaCost: 50
+  damage: 10
+  range: 15
+  skillShot: {fileID: 445987321633249245, guid: eba8606b5d69866499eb91acacbcce88, type: 3}
 --- !u!1 &1494702554
 GameObject:
   m_ObjectHideFlags: 0

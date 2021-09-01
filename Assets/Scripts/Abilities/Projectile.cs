@@ -6,8 +6,8 @@ public class Projectile : CollidableMonoBehaviour {
     
     protected float speed = 15.0f;
     protected float damage;
-    
-    protected Transform target { get; set; }
+
+    protected Transform target;
     
     public void SetTarget(Transform target_) {
         target = target_;

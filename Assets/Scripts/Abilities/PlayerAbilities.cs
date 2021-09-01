@@ -17,7 +17,7 @@ public class PlayerAbilities : MonoBehaviour {
 
     private Transform lastMoveRayTarget;
     private Vector3 lastMoveRayPosition;
-    
+
     enum LastButtonPressed {
         none = -1,
         stop = 0,
@@ -64,7 +64,7 @@ public class PlayerAbilities : MonoBehaviour {
 
     private void FixedUpdate() {
         float dt = Time.deltaTime;
-        
+
         // Update mouse target if any button is pressed
         if (buttonAbility1 || buttonAbility2 || buttonAbility3 || buttonAbility4 || buttonMove) {
             Transform targetTransform;
@@ -84,58 +84,73 @@ public class PlayerAbilities : MonoBehaviour {
             buttonMove ? LastButtonPressed.move :
             buttonStopMove ? LastButtonPressed.stop : lastButtonPressed;
 
-        Debug.Log(lastButtonPressed);
-
         // Update the ability corresponding to the last button pressed
-
         if (!rayTarget) return;
 
-        if (rayTarget.CompareTag("Enemy")) {
-            switch (lastButtonPressed) {
-                case LastButtonPressed.ability1:
-                    ability1.UpdateCast(dt, rayTarget, rayPosition);
-                    break;
-                case LastButtonPressed.ability2:
-                    break;
-                case LastButtonPressed.ability3:
-                    break;
-                case LastButtonPressed.ability4:
-                    break;
-                case LastButtonPressed.move:
-                    lastMoveRayTarget = rayTarget;
-                    lastMoveRayPosition = rayPosition;
-                    
-                    attack.UpdateCast(dt, rayTarget, rayPosition);
-                    break;
-            }
-        }
-        else if (rayTarget.CompareTag("Terrain")) {
-            if (lastButtonPressed == LastButtonPressed.move || buttonMove) {
-                Vector3 eulerAngles;
-                Vector3 position;
-                (eulerAngles, position) =
-                    attack.UpdatePlayerPosition(dt, rayPosition, transform.position, player.getMoveSpeed);
+        bool performedAction = false;
+        bool returnToMoveAbility = false;
 
-                player.Move(eulerAngles, position);
-            }
+        switch (lastButtonPressed) {
+            case LastButtonPressed.ability1:
+                (performedAction, returnToMoveAbility) = ability1.UpdateCast(dt, rayTarget, rayPosition);
+                break;
+            case LastButtonPressed.ability2:
+                (performedAction, returnToMoveAbility) = ability2.UpdateCast(dt, rayTarget, rayPosition);
+                break;
+            case LastButtonPressed.ability3:
+                break;
+            case LastButtonPressed.ability4:
+                break;
+            case LastButtonPressed.move:
+                lastMoveRayTarget = rayTarget;
+                lastMoveRayPosition = rayPosition;
+
+                (performedAction, returnToMoveAbility) = attack.UpdateCast(dt, rayTarget, rayPosition);
+                break;
+            case LastButtonPressed.stop:
+                performedAction = true;
+                break;
+            case LastButtonPressed.none:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
-        else if (lastMoveRayTarget) {
-            if (lastMoveRayTarget.CompareTag("Enemy")) {
-                Vector3 eulerAngles;
-                Vector3 position;
-                (eulerAngles, position) =
-                    attack.UpdatePlayerPosition(dt, lastMoveRayPosition, transform.position, player.getMoveSpeed);
-                
-                player.Move(eulerAngles, position);
+
+        // Return to move ability after some ability has successfully cast
+        if (returnToMoveAbility) {
+            lastButtonPressed = LastButtonPressed.move;
+        }
+
+        // Still try to perform an action if an action was not performed yet
+        if (!performedAction) {
+            Vector3 targetPos = transform.position;
+
+            // Move towards last pressed terrain location
+            if (rayTarget.CompareTag("Terrain")) {
+                if (lastButtonPressed == LastButtonPressed.move || buttonMove) {
+                    targetPos = rayPosition;
+                }
             }
-            else if (lastMoveRayTarget.CompareTag("Terrain")) {
-                Vector3 eulerAngles;
-                Vector3 position;
-                (eulerAngles, position) =
-                    attack.UpdatePlayerPosition(dt, lastMoveRayTarget.transform.position, transform.position, player.getMoveSpeed);
-                
-                player.Move(eulerAngles, position);
+            else if (rayTarget.CompareTag("Enemy")) {
+                if (lastButtonPressed == LastButtonPressed.move || buttonMove) {
+                    attack.UpdateCast(dt, rayTarget, rayPosition);
+                }
             }
+            else if (lastMoveRayTarget) {
+                if (lastMoveRayTarget.CompareTag("Enemy")) {
+                    attack.UpdateCast(dt, lastMoveRayTarget, lastMoveRayPosition);
+                }
+                else if (lastMoveRayTarget.CompareTag("Terrain")) {
+                    targetPos = lastMoveRayPosition;
+                }
+            }
+
+            Vector3 eulerAngles;
+            Vector3 position;
+            (eulerAngles, position) =
+                attack.UpdatePlayerPosition(dt, targetPos, transform.position, player.getMoveSpeed);
+
+            player.Move(eulerAngles, position);
         }
     }
 }

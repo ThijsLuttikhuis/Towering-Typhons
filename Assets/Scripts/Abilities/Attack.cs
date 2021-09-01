@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Attack : ProjectileAbility {
     private void Awake() {
+        isAttack = true;
+        
         cooldownTime = 0.6f;
         lockInTime = 0.1f;
         windUpTime = 0.15f;

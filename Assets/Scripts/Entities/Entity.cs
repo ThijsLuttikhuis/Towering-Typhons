@@ -13,6 +13,7 @@ public class Entity : MonoBehaviour {
     private float knockedUp = 0.0f;
     private float rooted = 0.0f;
     private float silenced = 0.0f;
+    private float blinded = 0.0f;
 
     [SerializeField] protected float maxHealthPoints = 500.0f;
     [SerializeField] protected float maxManaPoints = 250.0f;
@@ -28,17 +29,19 @@ public class Entity : MonoBehaviour {
 
     public float getMoveSpeed => moveSpeed;
     public float getAttackRange => attackRange;
+    public float GetAttackDamage => attackDamage;
 
-    public float GetAttackDamage() {
-        return attackDamage;
-    }
-
-    internal bool CanCastAbilities() {
+    public bool CanCastAbilities() {
         return stunned <= 0.0f && knockedUp <= 0.0f && silenced <= 0.0f;
     }
 
-    private bool CanMove() {
+    public bool CanMove() {
         return stunned <= 0.0f && knockedUp <= 0.0f && rooted <= 0.0f;
+    }
+
+    public bool CanAttack() {
+        return stunned <= 0.0f && knockedUp <= 0.0f && blinded <= 0.0f;
+
     }
 
     protected virtual void Initialize() {
@@ -76,6 +79,22 @@ public class Entity : MonoBehaviour {
     public void Stun(float time) {
         stunned = Mathf.Max(stunned, time);
     }
+    
+    public void Blind(float time) {
+        blinded = Mathf.Max(blinded, time);
+    }
+    
+    public void KnockUp(float time) {
+        knockedUp = Mathf.Max(knockedUp, time);
+    }
+    
+    public void Root(float time) {
+        rooted = Mathf.Max(rooted, time);
+    }
+    
+    public void Silence(float time) {
+        silenced = Mathf.Max(silenced, time);
+    }
 
     public bool Move(Vector3 eulerAngles, Vector3 position) {
         if (!CanMove()) return false;
@@ -94,7 +113,8 @@ public class Entity : MonoBehaviour {
         knockedUp -= dt;
         silenced -= dt;
         rooted -= dt;
-
+        blinded -= dt;
+        
         // Health/Mana regen
         currentHealthPoints += healthPerSecond * dt;
         currentManaPoints += manaPerSecond * dt;

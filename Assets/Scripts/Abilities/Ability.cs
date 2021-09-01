@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 
 public class Ability : MonoBehaviour {
+    [SerializeField] protected Player player;
 
     protected PathFinder pathFinder = new PathFinder();
 
@@ -16,20 +18,15 @@ public class Ability : MonoBehaviour {
     [SerializeField] protected float damage = 10.0f;
     [SerializeField] protected float range = 15.0f;
 
-    public virtual bool UpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
+    public virtual (bool, bool) UpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
+        // Returns: (performedAbility, returnToMoveAbility)
         Debug.LogWarning("PlayerAbility::UpdateCast needs to be overwritten");
-
-        return false;
+        return (false, false);
     }
 
-    public virtual bool AttemptCast() {
-        Debug.LogWarning("PlayerAbility::AttemptCast needs to be overwritten");
-
-        return false;
-    }
-
-    protected virtual void Cast(Transform targetTransform) {
+    protected virtual bool Cast(Transform targetTransform, Vector3 targetPosition) {
         Debug.LogWarning("PlayerAbility::Cast needs to be overwritten");
+        return false;
     }
 
     internal (Vector3, Vector3) UpdatePlayerPosition(float dt, Vector3 targetPos, Vector3 playerPos, float maxVelocity) {
@@ -59,4 +56,9 @@ public class Ability : MonoBehaviour {
         }
     }
 
+    private void FixedUpdate() {
+        float dt = Time.deltaTime;
+        
+        cooldownRemaining -= dt;
+    }
 }
