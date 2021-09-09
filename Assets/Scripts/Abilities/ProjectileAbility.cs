@@ -4,69 +4,71 @@ public class ProjectileAbility : Ability {
     [SerializeField] private Projectile projectile;
 
     protected bool isAttack = false;
-
+    protected bool stopCastingOnCast = false;
+    
     private bool UpdateAttackMove(float dt, Transform rayTarget, Vector3 rayPosition) {
-        bool stillAttacking = true;
 
         Vector3 targetPos = rayTarget.transform.position;
         float distanceToTarget = (transform.position - targetPos).magnitude;
 
-        if (timeSinceStart < windUpTime) {
+        if (timeSinceStart < lockInTime) {
             if (timeSinceStart > 0.0f) {
                 if (distanceToTarget > range) {
-                    stillAttacking = false;
-
                     Vector3 eulerAngles;
                     Vector3 position;
                     (eulerAngles, position) =
-                        UpdatePlayerPosition(dt, targetPos, transform.position, player.getMoveSpeed);
+                        UpdatePlayerPosition(dt, targetPos, transform.position, player.GetMoveSpeed);
 
-                    player.Move(eulerAngles, position);
+                    return player.Move(eulerAngles, position);
                 }
             }
             else if (distanceToTarget > range * 0.9f) {
-                stillAttacking = false;
-
                 Vector3 eulerAngles;
                 Vector3 position;
                 (eulerAngles, position) =
-                    UpdatePlayerPosition(dt, targetPos, transform.position, player.getMoveSpeed);
+                    UpdatePlayerPosition(dt, targetPos, transform.position, player.GetMoveSpeed);
 
-                player.Move(eulerAngles, position);
+                return player.Move(eulerAngles, position);
             }
         }
 
-        return stillAttacking;
+        return false;
     }
 
-    public override (bool, bool) UpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
-        if (!rayTarget.CompareTag("Enemy")) return (false, false);
-
-        bool performedAction = true;
-        bool returnToMoveAbility = false;
+    protected override (bool, bool) OnUpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
+        if (!rayTarget) {
+            return (false, true);
+        }
         
-        // Check if you are in range, if not, first get in range
-        bool stillAttacking = UpdateAttackMove(dt, rayTarget, rayPosition);
+        if (!rayTarget.CompareTag("Enemy")) {
+            return (false, true);
+        }
 
-        if (cooldownRemaining > 0.0f) {
-            performedAction = !stillAttacking;
-            // Waiting for cooldown
+        bool performedAction;
+        
+        if (!isLocked) {
+            // Check if you are in range, if not, first get in range
+            performedAction = UpdateAttackMove(dt, rayTarget, rayPosition);
+            if (performedAction) {
+                timeSinceStart = 0.0f;
+                isLocked = false;
+                return (true, true);
+            }
         }
-        else if (!stillAttacking) {
-            // Not in range or not attacking
-            timeSinceStart = 0.0f;
-        }
-        else if (timeSinceStart >= windUpTime) {
+
+        if (timeSinceStart >= windUpTime) {
             // Attempt to cast
-            performedAction = Cast(rayTarget, rayPosition);
-            returnToMoveAbility = performedAction;
+            performedAction = Cast(rayTarget, rayPosition);        
+            timeSinceStart = 0.0f;
+            isLocked = false;
+            return (performedAction, true);
         }
-        else {
-            // Casting Windup
-            timeSinceStart += dt;
-        }
-
-        return (performedAction, returnToMoveAbility);
+        
+        // Casting windup and lock
+        timeSinceStart += dt;
+        isLocked = timeSinceStart >= lockInTime;
+        
+        return (false, true);
     }
 
     protected override bool Cast(Transform targetTransform, Vector3 targetPosition) {
@@ -76,7 +78,7 @@ public class ProjectileAbility : Ability {
         if (isAttack ? player.CanAttack() : player.CanCastAbilities()) {
             // Check if you have enough mana
             if (player.RemoveMana(manaCost)) {
-                cooldownRemaining = cooldownTime - windUpTime;
+                SetCooldown();
 
                 Projectile projectile_ = Instantiate(projectile);
 
@@ -87,8 +89,10 @@ public class ProjectileAbility : Ability {
                 success = true;
             }
         }
-
-        timeSinceStart = 0.0f;
+        if (stopCastingOnCast) {
+            StopCasting();
+        }
+        
         return success;
     }
 }

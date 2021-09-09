@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 56429182996993400}
   - component: {fileID: 6282103307252837452}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Ability1 Projectile
-  m_TagString: Untagged
+  m_TagString: VisualWithHitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 532153511965779335}
   - component: {fileID: 6032574160945620321}
   - component: {fileID: 6600621537074726649}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Ability1 Projectile Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

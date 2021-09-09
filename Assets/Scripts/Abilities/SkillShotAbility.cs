@@ -2,68 +2,73 @@ using UnityEngine;
 
 public class SkillShotAbility : Ability {
     [SerializeField] private SkillShot skillShot;
-
+    
+    protected bool stopCastingOnCast = true;
+    
     private bool UpdateAttackMove(float dt, Transform rayTarget, Vector3 rayPosition) {
-        bool stillAttacking = true;
-
+        
         Vector3 targetPos = rayPosition;
         float distanceToTarget = (transform.position - targetPos).magnitude;
 
         if (timeSinceStart < windUpTime) {
             if (timeSinceStart > 0.0f) {
                 if (distanceToTarget > range) {
-                    stillAttacking = false;
-
                     Vector3 eulerAngles;
                     Vector3 position;
                     (eulerAngles, position) =
-                        UpdatePlayerPosition(dt, targetPos, transform.position, player.getMoveSpeed);
+                        UpdatePlayerPosition(dt, targetPos, transform.position, player.GetMoveSpeed);
 
-                    player.Move(eulerAngles, position);
+                    return player.Move(eulerAngles, position);
                 }
             }
             else if (distanceToTarget > range * 0.9f) {
-                stillAttacking = false;
-
                 Vector3 eulerAngles;
                 Vector3 position;
                 (eulerAngles, position) =
-                    UpdatePlayerPosition(dt, targetPos, transform.position, player.getMoveSpeed);
+                    UpdatePlayerPosition(dt, targetPos, transform.position, player.GetMoveSpeed);
 
-                player.Move(eulerAngles, position);
+                return player.Move(eulerAngles, position);
             }
         }
 
-        return stillAttacking;
+        return false;
     }
-    
-    public override (bool, bool) UpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
-        
-        bool performedAction = true;
-        bool returnToMoveAbility = false;
-        
-        // Check if you are in range, if not, first get in range
-        bool stillAttacking = UpdateAttackMove(dt, rayTarget, rayPosition);
 
-        if (cooldownRemaining > 0.0f) {
-            performedAction = !stillAttacking;
-            // Waiting for cooldown
+    protected override (bool, bool) OnUpdateCast(float dt, Transform rayTarget, Vector3 rayPosition) {
+        if (!rayTarget) {
+            return (false, true);
         }
-        else if (!stillAttacking) {
-            // Not in range or not attacking
-            timeSinceStart = 0.0f;
+        
+        if (rayTarget.CompareTag("Enemy")) {
+            rayPosition = rayTarget.position;
+            rayPosition.y = 0.0f;
         }
-        else if (timeSinceStart >= windUpTime) {
+
+        bool performedAction;
+        
+        if (!isLocked) {
+            // Check if you are in range, if not, first get in range
+            performedAction = UpdateAttackMove(dt, rayTarget, rayPosition);
+            if (performedAction) {
+                timeSinceStart = 0.0f;
+                isLocked = false;
+                return (true, true);
+            }
+        }
+        
+        if (timeSinceStart >= windUpTime) {
             // Attempt to cast
             performedAction = Cast(rayTarget, rayPosition);
-            returnToMoveAbility = performedAction;
-        }
-        else {
-            // Casting Windup
-            timeSinceStart += dt;
+            timeSinceStart = 0.0f;
+            isLocked = false;
+            return (performedAction, false);
         }
 
-        return (performedAction, returnToMoveAbility);
+        // Casting windup and lock
+        timeSinceStart += dt;
+        isLocked = timeSinceStart >= lockInTime;
+        
+        return (false, false);
     }
 
     protected override bool Cast(Transform targetTransform, Vector3 targetPosition) {
@@ -73,18 +78,20 @@ public class SkillShotAbility : Ability {
         if (player.CanCastAbilities()) {
             // Check if you have enough mana
             if (player.RemoveMana(manaCost)) {
-                cooldownRemaining = cooldownTime - windUpTime;
+                SetCooldown();
 
                 SkillShot skillShot_ = Instantiate(skillShot);
 
                 skillShot_.SetDamage(damage);
-                skillShot_.transform.position = targetPosition;
-
+                skillShot_.transform.position = player.transform.position;
+                skillShot_.SetTargetPos(targetPosition);
                 success = true;
             }
         }
+        if (stopCastingOnCast) {
+            StopCasting();
+        }
 
-        timeSinceStart = 0.0f;
         return success;
     }
 }

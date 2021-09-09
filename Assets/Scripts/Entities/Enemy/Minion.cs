@@ -7,9 +7,8 @@ public class Minion : Entity {
     protected override void Initialize() {
         maxHealthPoints = 260.0f;
         maxManaPoints = 0.0f;
-        armorPoints = 30.0f;
-        attackDamage = 20.0f;
-        attackRange = 4.0f;
+        armor = 30.0f;
+        magicResist = 30.0f;
 
         moveSpeed = 4.0f;
 

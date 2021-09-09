@@ -45,8 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65908623c558aaf49b895ad48ef299c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  manaBar: {fileID: 0}
   healthBar: {fileID: 66980774030984785}
   maxHealthPoints: 270
+  healthPerSecond: 0
+  currentHealthPoints: 0
+  maxManaPoints: 0
+  manaPerSecond: 0
+  currentManaPoints: 0
+  armor: 0
+  magicResist: 0
+  moveSpeed: 0
 --- !u!1 &7280692937390155760
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,6 +258,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7280692937772941438}
     m_Modifications:
+    - target: {fileID: 7343049984463557613, guid: fe642172413be4d4b811bb607dd455eb, type: 3}
+      propertyPath: parentCanvas
+      value: 
+      objectReference: {fileID: 7280692937772941438}
     - target: {fileID: 7343049984463557614, guid: fe642172413be4d4b811bb607dd455eb, type: 3}
       propertyPath: m_Name
       value: Health Bar

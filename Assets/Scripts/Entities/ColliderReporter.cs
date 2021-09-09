@@ -6,4 +6,8 @@ public class ColliderReporter : MonoBehaviour {
     private void OnTriggerEnter(Collider other) {
         collidableMonoBehaviour.Collide(other);
     }
+    
+    private void OnTriggerExit(Collider other) {
+        collidableMonoBehaviour.LeaveCollide(other);
+    }
 }

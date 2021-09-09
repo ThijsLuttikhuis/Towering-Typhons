@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class SliderBar : Billboard {
     public Slider slider;
-
+    
     public SliderBar(float startValue = 100.0f, float maxValue = 100.0f) {
         slider.maxValue = maxValue;
         slider.value = startValue;

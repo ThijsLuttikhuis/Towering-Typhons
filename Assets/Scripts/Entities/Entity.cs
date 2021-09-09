@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 
 public class Entity : MonoBehaviour {
+    [SerializeField] internal SliderBar manaBar;
     [SerializeField] internal SliderBar healthBar;
 
     private float stunned = 0.0f;
@@ -14,22 +15,22 @@ public class Entity : MonoBehaviour {
     private float rooted = 0.0f;
     private float silenced = 0.0f;
     private float blinded = 0.0f;
+    private float slowed = 0.0f;
+    private float slowPercentage = 0.0f;
 
-    [SerializeField] protected float maxHealthPoints = 500.0f;
-    [SerializeField] protected float maxManaPoints = 250.0f;
-    [SerializeField] protected float healthPerSecond = 5.0f;
-    [SerializeField] protected float manaPerSecond = 2.0f;
+    [SerializeField] protected float maxHealthPoints;
+    [SerializeField] protected float healthPerSecond;
     [SerializeField] protected float currentHealthPoints;
+
+    [SerializeField] protected float maxManaPoints;
+    [SerializeField] protected float manaPerSecond;
     [SerializeField] protected float currentManaPoints;
 
-    [SerializeField] protected float armorPoints = 20.0f;
-    [SerializeField] protected float attackDamage = 50.0f;
-    [SerializeField] protected float attackRange = 8.0f;
-    [SerializeField] protected float moveSpeed = 6.0f;
+    [SerializeField] protected float armor;
+    [SerializeField] protected float magicResist;
+    [SerializeField] protected float moveSpeed;
 
-    public float getMoveSpeed => moveSpeed;
-    public float getAttackRange => attackRange;
-    public float GetAttackDamage => attackDamage;
+    public float GetMoveSpeed => moveSpeed;
 
     public bool CanCastAbilities() {
         return stunned <= 0.0f && knockedUp <= 0.0f && silenced <= 0.0f;
@@ -68,12 +69,16 @@ public class Entity : MonoBehaviour {
     }
 
     public bool RemoveMana(float manaCost) {
-        if (currentManaPoints < manaCost) {
-            return false;
+        bool hasMana = HasMana(manaCost);
+        if (hasMana) {
+            currentManaPoints -= manaCost;
         }
 
-        currentManaPoints -= manaCost;
-        return true;
+        return hasMana;
+    }
+
+    public bool HasMana(float manaCost) {
+        return currentManaPoints >= manaCost;
     }
 
     public void Stun(float time) {
@@ -96,11 +101,26 @@ public class Entity : MonoBehaviour {
         silenced = Mathf.Max(silenced, time);
     }
 
+    public void Slow(float slowPercent_, float slowDuration_) {
+        slowPercentage = slowPercent_;
+        slowed = slowDuration_;
+    }
+    
     public bool Move(Vector3 eulerAngles, Vector3 position) {
         if (!CanMove()) return false;
 
-        transform.position = position;
-        transform.eulerAngles = eulerAngles;
+        //TODO: Limit movement here! (add dt, check if not exceeding movespeed)
+        
+        if (slowed > 0.0f) {
+            transform.position = 0.01f * slowPercentage * transform.position +
+                                 0.01f * (100.0f - slowPercentage) * position;
+            
+            transform.eulerAngles = eulerAngles;
+        }
+        else {
+            transform.position = position;
+            transform.eulerAngles = eulerAngles;
+        }
 
         return true;
     }
@@ -114,6 +134,7 @@ public class Entity : MonoBehaviour {
         silenced -= dt;
         rooted -= dt;
         blinded -= dt;
+        slowed -= dt;
         
         // Health/Mana regen
         currentHealthPoints += healthPerSecond * dt;
@@ -126,9 +147,15 @@ public class Entity : MonoBehaviour {
         OnFixedUpdate(dt);
         
         healthBar.SetValue(currentHealthPoints, maxHealthPoints);
+
+        if (maxManaPoints > 0.0f) {
+            manaBar.SetValue(currentManaPoints, maxManaPoints);
+        }
     }
 
     protected virtual void OnFixedUpdate(float dt) {
         Debug.Log("PlayerAbility::UpdateCast needs to be overwritten");
     }
+
+
 }

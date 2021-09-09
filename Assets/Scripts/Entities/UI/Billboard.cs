@@ -4,14 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Billboard : MonoBehaviour {
+    [SerializeField] private Transform playerCamera;
+    [SerializeField] private Transform parentCanvas;
 
-    [SerializeField] internal Transform playerCamera;
-    
-    void LateUpdate()
-    {
-        transform.LookAt(transform.position + playerCamera.forward);
+    public void SetPlayerCamera(Transform playerCamera_) {
+        playerCamera = playerCamera_;
+    }
 
-        float scale = (transform.position - playerCamera.transform.position).magnitude / 20.0f;
-        transform.localScale = new Vector3(scale, scale, scale);
+    void LateUpdate() {
+        if (!parentCanvas) return;
+        
+        parentCanvas.transform.LookAt(parentCanvas.transform.position + playerCamera.forward);
+
+        float scale = (parentCanvas.transform.position - playerCamera.transform.position).magnitude / 20.0f;
+        parentCanvas.transform.localScale = new Vector3(scale, scale, scale);
     }
 }

@@ -14,6 +14,22 @@
                     "interactions": ""
                 },
                 {
+                    "name": "ToggleLockedCamera",
+                    "type": "Button",
+                    "id": "b481c7f8-912f-449c-9841-12a1e406abfd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "CenterCamera",
+                    "type": "Button",
+                    "id": "5d932112-df0c-4f59-b171-fc83b316af9c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
                     "name": "RotateCameraRight",
                     "type": "Button",
                     "id": "3414da97-ca7a-4e65-9173-884d168dd963",
@@ -60,6 +76,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "Press(behavior=2)"
+                },
+                {
+                    "name": "StopMove",
+                    "type": "Button",
+                    "id": "d95a62ac-f148-40d0-9d10-3987f1f3f303",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
                 },
                 {
                     "name": "Ability1",
@@ -317,6 +341,39 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Ability1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f09ddf20-e160-49ee-9b80-65870dac44d1",
+                    "path": "<Keyboard>/y",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ToggleLockedCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c0885d8d-b31a-441f-b4f3-aabfedf502a1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CenterCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f69e2718-86f6-4912-8a59-1fa93a20aaf4",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "StopMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

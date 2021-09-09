@@ -33,7 +33,7 @@ public class MinionSpawner : MonoBehaviour {
 
         if (tIndividual > individualSpawnTime) {
             Entity newMinion = Instantiate(minion);
-            newMinion.healthBar.playerCamera = playerCamera;
+            newMinion.healthBar.SetPlayerCamera(playerCamera);
             nInGroup++;
 
             tIndividual = 0.0f;
